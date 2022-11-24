@@ -107,12 +107,33 @@ function stopRecording() {
 
 	//tell the recorder to stop the recording
 	rec.stop();
-
 	//stop microphone access
 	gumStream.getAudioTracks()[0].stop();
 
-	//create the wav blob and pass it on to createDownloadLink
-	rec.exportWAV(createDownloadLink);
+    rec.exportWAV(createDownloadLink);
+    var filename = new Date().toISOString();
+    var blob = new File([rec.recordedData], {type:"audio/wav"});
+    console.log("start sending binary data...");
+    var form = new FormData();
+    form.append('recorded_audio', blob);
+    $.ajax({
+        url: '',
+        type: 'POST',
+        data: form,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            if (response.success) {
+                    document.getElementById("alert").style.display = "block";
+                    window.location.href = `${response.url}`;
+                  } else {
+                    btn.html("Error").prop("disabled", false);
+                  }
+        },
+        error: function () {
+            console.error(error);
+        }
+    });
 }
 
 function createDownloadLink(blob) {
@@ -134,6 +155,7 @@ function createDownloadLink(blob) {
 	link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
 	link.innerHTML = "Save to disk";
 
+
 	//add the new audio element to li
 	li.appendChild(au);
 
@@ -142,6 +164,7 @@ function createDownloadLink(blob) {
 
 	//add the save to disk link to li
 	li.appendChild(link);
+
 
 	//upload link
 	var upload = document.createElement('a');
@@ -155,9 +178,10 @@ function createDownloadLink(blob) {
 		      }
 		  };
 		  var fd=new FormData();
-		  fd.append("audio_data",blob, filename);
-		  xhr.open("POST","upload.php",true);
+
+		  xhr.open("POST","assets/upload.php",true);
 		  xhr.send(fd);
+
 	})
 	li.appendChild(document.createTextNode (" "))//add a space in between
 	li.appendChild(upload)//add the upload link to li
