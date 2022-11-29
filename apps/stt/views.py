@@ -8,14 +8,17 @@ from django.contrib import messages
 from django.http.response import JsonResponse
 
 from apps.stt.services.speech_recognize import speech_recognition
+from django.views.decorators.csrf import csrf_exempt
 
-
+@csrf_exempt
 def record(request):
 
     if request.method == "POST":
         print("POST")
         print(request.FILES)
-        audio_file = request.FILES.get("recorded_audio")
+        audio_file = request.FILES.get("audio_data")
+        print(audio_file)
+        print(type(audio_file))
         #text=speech_recognition(audio_file)
         #print(text)
         record = Record.objects.create(voice_record=audio_file)

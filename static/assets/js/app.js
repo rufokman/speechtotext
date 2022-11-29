@@ -111,29 +111,29 @@ function stopRecording() {
 	gumStream.getAudioTracks()[0].stop();
 
     rec.exportWAV(createDownloadLink);
-    var filename = new Date().toISOString();
-    var blob = new File([rec.recordedData], {type:"audio/wav"});
-    console.log("start sending binary data...");
-    var form = new FormData();
-    form.append('recorded_audio', blob);
-    $.ajax({
-        url: '',
-        type: 'POST',
-        data: form,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            if (response.success) {
-                    document.getElementById("alert").style.display = "block";
-                    window.location.href = `${response.url}`;
-                  } else {
-                    btn.html("Error").prop("disabled", false);
-                  }
-        },
-        error: function () {
-            console.error(error);
-        }
-    });
+    // var filename = new Date().toISOString();
+    // var blob = new File([rec.recordedData], {type:"audio/wav"});
+    // console.log("start sending binary data...");
+    // var form = new FormData();
+    // form.append('recorded_audio', blob);
+    // $.ajax({
+    //     url: '',
+    //     type: 'POST',
+    //     data: form,
+    //     processData: false,
+    //     contentType: false,
+    //     success: function (response) {
+    //         if (response.success) {
+    //                 document.getElementById("alert").style.display = "block";
+    //                 window.location.href = `${response.url}`;
+    //               } else {
+    //                 btn.html("Error").prop("disabled", false);
+    //               }
+    //     },
+    //     error: function () {
+    //         console.error(error);
+    //     }
+    // });
 }
 
 function createDownloadLink(blob) {
@@ -142,7 +142,7 @@ function createDownloadLink(blob) {
 	var au = document.createElement('audio');
 	var li = document.createElement('li');
 	var link = document.createElement('a');
-
+	console.log("HELLO??");
 	//name of .wav file to use during upload and download (without extendion)
 	var filename = new Date().toISOString();
 
@@ -172,14 +172,15 @@ function createDownloadLink(blob) {
 	upload.innerHTML = "Upload";
 	upload.addEventListener("click", function(event){
 		  var xhr=new XMLHttpRequest();
+		  console.log("HELLO??");
 		  xhr.onload=function(e) {
 		      if(this.readyState === 4) {
 		          console.log("Server returned: ",e.target.responseText);
 		      }
 		  };
 		  var fd=new FormData();
-
-		  xhr.open("POST","assets/upload.php",true);
+		  fd.append("audio_data", blob, filename);
+		  xhr.open("POST","",false);
 		  xhr.send(fd);
 
 	})
