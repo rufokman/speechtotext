@@ -14,42 +14,21 @@ var stopButton = document.getElementById("stopButton");
 var pauseButton = document.getElementById("pauseButton");
 
 //add events to those 2 buttons
+
 recordButton.addEventListener("click", startRecording);
 stopButton.addEventListener("click", stopRecording);
 pauseButton.addEventListener("click", pauseRecording);
 
 function startRecording() {
 	console.log("recordButton clicked");
-
-	/*
-		Simple constraints object, for more advanced audio features see
-		https://addpipe.com/blog/audio-constraints-getusermedia/
-	*/
-
     var constraints = { audio: true, video:false }
-
- 	/*
-    	Disable the record button until we get a success or fail from getUserMedia()
-	*/
 
 	recordButton.disabled = true;
 	stopButton.disabled = false;
 	pauseButton.disabled = false
 
-	/*
-    	We're using the standard promise based getUserMedia()
-    	https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-	*/
-
 	navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
 		console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
-
-		/*
-			create an audio context after getUserMedia is called
-			sampleRate might change after getUserMedia is called, like it does on macOS when recording through AirPods
-			the sampleRate defaults to the one set in your OS for your playback device
-
-		*/
 		audioContext = new AudioContext();
 
 		//update the format
@@ -111,30 +90,9 @@ function stopRecording() {
 	gumStream.getAudioTracks()[0].stop();
 
     rec.exportWAV(createDownloadLink);
-    // var filename = new Date().toISOString();
-    // var blob = new File([rec.recordedData], {type:"audio/wav"});
-    // console.log("start sending binary data...");
-    // var form = new FormData();
-    // form.append('recorded_audio', blob);
-    // $.ajax({
-    //     url: '',
-    //     type: 'POST',
-    //     data: form,
-    //     processData: false,
-    //     contentType: false,
-    //     success: function (response) {
-    //         if (response.success) {
-    //                 document.getElementById("alert").style.display = "block";
-    //                 window.location.href = `${response.url}`;
-    //               } else {
-    //                 btn.html("Error").prop("disabled", false);
-    //               }
-    //     },
-    //     error: function () {
-    //         console.error(error);
-    //     }
-    // });
-}
+
+
+   }
 
 function createDownloadLink(blob) {
 
@@ -164,29 +122,29 @@ function createDownloadLink(blob) {
 
 	//add the save to disk link to li
 	li.appendChild(link);
+    var xhr = new XMLHttpRequest();
+    var fd=new FormData();
+    fd.append("audio_data", blob, filename);
+    xhr.open("POST", '', false);
+    xhr.send(fd);
+    window.location.reload();
+}
 
 
-	//upload link
-	var upload = document.createElement('a');
-	upload.href="#";
-	upload.innerHTML = "Upload";
-	upload.addEventListener("click", function(event){
-		  var xhr=new XMLHttpRequest();
-		  console.log("HELLO??");
-		  xhr.onload=function(e) {
-		      if(this.readyState === 4) {
-		          console.log("Server returned: ",e.target.responseText);
-		      }
-		  };
-		  var fd=new FormData();
-		  fd.append("audio_data", blob, filename);
-		  xhr.open("POST","",false);
-		  xhr.send(fd);
 
-	})
-	li.appendChild(document.createTextNode (" "))//add a space in between
-	li.appendChild(upload)//add the upload link to li
+function func() {
 
-	//add the li element to the ol
-	recordingsList.appendChild(li);
+    rec.stop();
+    var xhr=new XMLHttpRequest();
+    xhr.onload=function(e) {
+      if(this.readyState === 4) {
+          console.log("Server returned: ",e.target.responseText);
+      }
+    };
+   var fd=new FormData();
+   fd.append("audio_data", blob, filename);
+   xhr.open("POST","",false);
+   xhr.send(fd);
+
+
 }

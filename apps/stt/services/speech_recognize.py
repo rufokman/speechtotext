@@ -1,5 +1,8 @@
 import speech_recognition as sr
 
+from schedule import Scheduler
+import schedule
+
 
 def speech_recognition(source):
     r = sr.Recognizer()
